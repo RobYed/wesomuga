@@ -9,10 +9,11 @@ var game = {
     data : {
         // score
         score : 0,
-        playerId: null
+        playerId: null,
+        otherPlayers: {},
     },
 
-    socket: io('http://localhost:3000'),
+    socket: io('http://192.168.1.229:3000'),
 
     /**
      *
@@ -53,17 +54,33 @@ var game = {
             console.log('connected to websocket server');
         });
 
-        game.socket.on('playerid', function(data) {
-            game.data.playerId = data;
+        game.socket.on('register_player', function(playerId) {
+            game.data.playerId = playerId;
+            console.log('registered with id ', playerId);
         });
 
-        game.socket.on('message', function(message){
-            console.log(message);
+        game.socket.on('new_player', function(playerSettings) {
+            console.log(playerSettings.nickname+' joined the game', playerSettings.pos.x, playerSettings.pos.y);
+
+            if (playerSettings.playerId !== game.data.playerId) {
+                // programmatically add new player
+                game.data.otherPlayers[playerSettings.playerId] = me.pool.pull("otherPlayer", playerSettings.pos.x, playerSettings.pos.y);
+                me.game.world.addChild(game.data.otherPlayers[playerSettings.playerId]);
+            }
         });
 
-        game.socket.on('update', function(data) {
-            // handle update
-            console.log(data.playerId, data.pos);
+        game.socket.on('game_update', function(playerSettings) {
+
+            if (playerSettings.playerId !== game.data.playerId) {
+                game.data.otherPlayers[playerSettings.playerId].pos.x = playerSettings.pos.x;
+                game.data.otherPlayers[playerSettings.playerId].pos.y = playerSettings.pos.y;
+
+                game.data.otherPlayers[playerSettings.playerId].body.vel.x = playerSettings.vel.x;
+                game.data.otherPlayers[playerSettings.playerId].body.vel.y = playerSettings.vel.y;
+
+                game.data.otherPlayers[playerSettings.playerId].body.update();
+            }
+
         });
 
         game.socket.on('disconnect', function(){
@@ -85,6 +102,7 @@ var game = {
 
         // register our objects entity in the object pool
         me.pool.register("mainPlayer", game.PlayerEntity);
+        me.pool.register("otherPlayer", game.OtherPlayerEntity);
         me.pool.register("SlimeEntity", game.SlimeEnemyEntity);
         me.pool.register("FlyEntity", game.FlyEnemyEntity);
         me.pool.register("CoinEntity", game.CoinEntity);

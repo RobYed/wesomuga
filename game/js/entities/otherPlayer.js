@@ -1,5 +1,13 @@
-game.PlayerEntity = me.Entity.extend({
-    init: function(x, y, settings) {
+game.OtherPlayerEntity = me.Entity.extend({
+    init: function(x, y) {
+
+        var settings = {
+            name:"otherPlayer",
+            z:6,
+            width:35,
+            height:88
+        };
+
         // call the constructor
         this._super(me.Entity, "init", [x, y , settings]);
 
@@ -10,32 +18,15 @@ game.PlayerEntity = me.Entity.extend({
         this.body.setVelocity(3, 15);
         this.body.setFriction(0.4,0);
 
+        // set the entity body collision type
+        this.body.collisionType = me.collision.types.PLAYER_OBJECT;
+
+        // filter collision detection with collision shapes, enemies and collectables
+        this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.ENEMY_OBJECT | me.collision.types.COLLECTABLE_OBJECT);
+
         this.dying = false;
 
         this.mutipleJump = 1;
-
-        // set the display around our position
-        me.game.viewport.follow(this, me.game.viewport.AXIS.BOTH);
-
-        // enable keyboard
-        me.input.bindKey(me.input.KEY.LEFT,  "left");
-        me.input.bindKey(me.input.KEY.RIGHT, "right");
-        me.input.bindKey(me.input.KEY.X,     "jump", true);
-        me.input.bindKey(me.input.KEY.UP,    "jump", true);
-        me.input.bindKey(me.input.KEY.DOWN,  "down");
-
-        me.input.bindKey(me.input.KEY.A,     "left");
-        me.input.bindKey(me.input.KEY.D,     "right");
-        me.input.bindKey(me.input.KEY.W,     "jump", true);
-        me.input.bindKey(me.input.KEY.S,     "down");
-
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.FACE_1, me.input.KEY.UP);
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.FACE_2, me.input.KEY.UP);
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.DOWN, me.input.KEY.DOWN);
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.FACE_3, me.input.KEY.DOWN);
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.FACE_4, me.input.KEY.DOWN);
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.LEFT, me.input.KEY.LEFT);
-        me.input.bindGamepad(0, me.input.GAMEPAD.BUTTONS.RIGHT, me.input.KEY.RIGHT);
 
         // set a renderable
         this.renderable = game.texture.createAnimationFromName([
@@ -46,7 +37,11 @@ game.PlayerEntity = me.Entity.extend({
         ]);
 
         // define a basic walking animatin
-        this.renderable.addAnimation ("walk",  [{ name: "walk0001.png", delay: 100 }, { name: "walk0002.png", delay: 100 }, { name: "walk0003.png", delay: 100 }]);
+        this.renderable.addAnimation ("walk",  [
+            { name: "walk0001.png", delay: 100 },
+            { name: "walk0002.png", delay: 100 },
+            { name: "walk0003.png", delay: 100 }
+        ]);
         // set as default
         this.renderable.setCurrentAnimation("walk");
 
@@ -61,73 +56,22 @@ game.PlayerEntity = me.Entity.extend({
     ------            */
     update : function (dt) {
 
-        if (me.input.isKeyPressed("left"))    {
-            this.body.vel.x -= this.body.accel.x * me.timer.tick;
-            this.renderable.flipX(true);
-        } else if (me.input.isKeyPressed("right")) {
-            this.body.vel.x += this.body.accel.x * me.timer.tick;
-            this.renderable.flipX(false);
-        }
-
-        if (me.input.isKeyPressed("jump")) {
-            this.body.jumping = true;
-
-            if (this.multipleJump <= 2) {
-                // easy "math" for double jump
-                this.body.vel.y -= (this.body.maxVel.y * this.multipleJump++) * me.timer.tick;
-                me.audio.play("jump", false);
-            }
-        }
-        else if (!this.body.falling && !this.body.jumping) {
-            // reset the multipleJump flag if on the ground
-            this.multipleJump = 1;
-        }
-        else if (this.body.falling && this.multipleJump < 2) {
-            // reset the multipleJump flag if falling
-            this.multipleJump = 2;
-        }
-
         // apply physics to the body (this moves the entity)
         this.body.update(dt);
-
-        // check if we fell into a hole
-        if (!this.inViewport && (this.pos.y > me.video.renderer.getHeight())) {
-            // if yes reset the game
-            me.game.world.removeChild(this);
-            me.game.viewport.fadeIn("#fff", 150, function(){
-                me.audio.play("die", false);
-                me.levelDirector.reloadLevel();
-                me.game.viewport.fadeOut("#fff", 150);
-            });
-            return true;
-        }
 
         // handle collisions against other shapes
         me.collision.check(this);
 
-        // check if we moved (an "idle" animation would definitely be cleaner)
-        if (this.body.vel.x !== 0 || this.body.vel.y !== 0 ||
-            (this.renderable && this.renderable.isFlickering())
-        ) {
-            this._super(me.Entity, "update", [dt]);
+        this._super(me.Entity, "update", [dt]);
 
-            // send new player position
-            game.socket.emit('update', {
-                playerId: game.data.playerId,
-                pos: this.pos
-            });
-
-            return true;
-        }
-
-        return false;
+        return true;
     },
-
 
     /**
      * colision handler
      */
     onCollision : function (response, other) {
+
         switch (other.body.collisionType) {
             case me.collision.types.WORLD_SHAPE:
                 // Simulate a platform object
