@@ -110,6 +110,13 @@ game.PlayerEntity = me.Entity.extend({
             (this.renderable && this.renderable.isFlickering())
         ) {
             this._super(me.Entity, "update", [dt]);
+
+            // send new player position
+            game.socket.emit('update', {
+                playerId: game.data.playerId,
+                pos: this.pos
+            });
+
             return true;
         }
 

@@ -8,8 +8,11 @@ var game = {
      */
     data : {
         // score
-        score : 0
+        score : 0,
+        playerId: null
     },
+
+    socket: io('http://localhost:3000'),
 
     /**
      *
@@ -45,19 +48,26 @@ var game = {
         // load everything & display a loading screen
         me.state.change(me.state.LOADING);
 
-        var socket = new eio.Socket('ws://localhost:3000/');
+        // SOCKET
+        game.socket.on('connect', function(){
+            console.log('connected to websocket server');
+        });
 
-        socket.on('open', function(){
+        game.socket.on('playerid', function(data) {
+            game.data.playerId = data;
+        });
 
-            socket.on('message', function(data){
-                console.log(data);
-            });
+        game.socket.on('message', function(message){
+            console.log(message);
+        });
 
-            socket.on('close', function(){
+        game.socket.on('update', function(data) {
+            // handle update
+            console.log(data.playerId, data.pos);
+        });
 
-            });
-
-            console.log('opened connection');
+        game.socket.on('disconnect', function(){
+            console.log('disconnected from websocket server');
         });
     },
 

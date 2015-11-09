@@ -1,21 +1,26 @@
-var engine = require('engine.io');
-var server = engine.listen(3000);
+var app = require('http').createServer();
+var io = require('socket.io')(app);
+var fs = require('fs');
 
-var players = [];
+app.listen(3000);
 
-server.on('connection', function(socket){
+players = {};
 
-  var socketNumber = players.push(socket);
 
-  socket.send('player'+socketNumber);
+io.on('connection', function (socket) {
 
-  sendAll('player'+socketNumber+' connected');
+  var playerId = Math.round(Math.random()*10000, 5);
 
-  console.log('player'+socketNumber+' connected');
+  players[playerId] = socket;
+
+  socket.emit('playerid', playerId);
+  io.emit('message', 'player '+playerId+' connected');
+  console.log('player '+playerId+' connected');
+
+  socket.on('update', function (data) {
+    io.emit('update', data);
+  });
+
 });
 
-function sendAll(msg) {
-  for (var i = players.length - 1; i >= 0; i--) {
-    players[i].send(msg);
-  }
-}
+console.log('started socket server');
