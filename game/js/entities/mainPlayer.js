@@ -119,12 +119,16 @@ game.PlayerEntity = me.Entity.extend({
         ) {
             this._super(me.Entity, "update", [dt]);
 
+            /*
+
             // send new player position
             game.socket.emit('player_update', {
                 playerId: game.data.playerId,
                 pos: { x: this.pos.x, y: this.pos.y },
                 vel: { x: this.body.vel.x, y: this.body.vel.y }
             });
+
+*/
 
             return true;
         }
@@ -223,7 +227,9 @@ game.PlayerEntity = me.Entity.extend({
             }
         };
 
+        /*
         game.socket.emit('join_game', playerSettings);
         console.log('trying to join game...');
+        */
     }
 });

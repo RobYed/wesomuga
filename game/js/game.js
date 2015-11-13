@@ -13,7 +13,7 @@ var game = {
         otherPlayers: {},
     },
 
-    socket: io('http://192.168.1.229:3000'),
+    multiplayer: new Multiplayer(),
 
     /**
      *
@@ -49,6 +49,7 @@ var game = {
         // load everything & display a loading screen
         me.state.change(me.state.LOADING);
 
+        /*
         // SOCKET
         game.socket.on('connect', function(){
             console.log('connected to websocket server');
@@ -86,6 +87,8 @@ var game = {
         game.socket.on('disconnect', function(){
             console.log('disconnected from websocket server');
         });
+
+        */
     },
 
 
