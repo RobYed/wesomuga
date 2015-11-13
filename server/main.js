@@ -9,8 +9,7 @@ var server          = require('http').createServer(),
 
 
 var playerPool      = require('./players'),
-    socketRouter    = require('./socket')(playerPool),
-    game            = require('./game')(playerPool);
+    socketRouter    = require('./socket')(playerPool);
 
 
 /////////////////////////////////////////////////
@@ -19,6 +18,7 @@ var playerPool      = require('./players'),
 var wss = new WebSocketServer({ server: server }),
     app = express(),
     port = 4080;
+
 
 wss.on('connection', function connection(ws) {
   var location = url.parse(ws.upgradeReq.url, true);
@@ -41,7 +41,7 @@ wss.on('connection', function connection(ws) {
       return;
     }
 
-    socketRouter.handleIncoming(JSON.parse(message));
+    socketRouter.handleIncoming(message);
   });
 
 });

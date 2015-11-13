@@ -20,14 +20,15 @@ class SocketRouter {
 
     constructor(playerPool) {
         this.inEvents = {
-            'connect_newplayer': this.onConnectNewPlayer,
-            'connect_playername': this.onConnectPlayerName
+            'register_newplayer': this.onConnectNewPlayer.bind(this),
+            'register_playername': this.onConnectPlayerName.bind(this)
         };
 
         this.playerPool = playerPool;
     }
 
     handleIncoming(message) {
+
         // parse JSON if possible
         try {
             var msgObj = JSON.parse(message);
@@ -42,23 +43,23 @@ class SocketRouter {
             return false;
         }
 
-        // find event handler
-        for (var event in this.inEvents) {
-            if (this.inEvents.hasOwnProperty(event)) {
-                this.inEvents[event](msgObj);
-                return true;
-            }
+        // call event handler
+        if (this.inEvents.hasOwnProperty(msgObj.header.event)) {
+            this.inEvents[msgObj.header.event](msgObj);
+            return true;
         }
+
         return false;
     }
 
-    onConnectNewPlayer(socket) {
-        console.log('client connected');
+    /////////////////////////////////////////////
 
+    onConnectNewPlayer(socket) {
+        // create new player
         var player = this.playerPool.createPlayer(socket);
 
         // return playerId to player
-        var msg = new SocketMessage("connect_playerId", {
+        var msg = new SocketMessage("register_playerId", {
           playerId: player.getId(),
         });
 
@@ -71,9 +72,23 @@ class SocketRouter {
         var player = this.playerPool.getPlayerById(playerId);
 
         player.setName(msgObj.payload.playerName);
+
+        console.log("new player registered: ", player.name);
+
+        this.respondConnectSuccess(player.socket);
+    }
+
+    /////////////////////////////////////////////
+
+    respondConnectSuccess(socket) {
+        var msg = new SocketMessage("register_success", {
+          success: true,
+        });
+
+        socket.send(msg.toJSON());
     }
 }
 
-module.exports = function (playerPool) {
-    return new SocketRouter(playerPool);
-};
+module.exports = function(playerSocket) {
+    return new SocketRouter(playerSocket);
+}
