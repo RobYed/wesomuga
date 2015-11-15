@@ -1,41 +1,7 @@
 'use strict';
 
-var crypto = require('crypto');
+var Player = require('./player');
 
-class Player {
-
-    constructor(socket) {
-        this.id = crypto.randomBytes(16).toString('hex');
-        this.name = "player_" + this.id;
-        this.socket = socket;
-        console.log(this.name, "added");
-    }
-
-    getId() {
-        return this.id;
-    }
-
-    setName(name) {
-        if (typeof name !== "string") {
-        return false;
-        }
-        this.name = name;
-    return true;
-    }
-
-    toString() {
-      return this.name;
-    }
-
-    toJSON() {
-        var obj = {
-          id: this.id,
-          name: this.name,
-          socket: this.socket
-        };
-        return JSON.stringify(obj);
-    }
-}
 
 class PlayerPool {
 

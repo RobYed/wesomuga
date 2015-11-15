@@ -8,8 +8,8 @@ var server          = require('http').createServer(),
     WebSocketServer = require('ws').Server;
 
 
-var playerPool      = require('./players'),
-    socketRouter    = require('./socket')(playerPool);
+var playerPool      = require('./playerPool'),
+    socketRouter    = require('./socketRouter')(playerPool);
 
 
 /////////////////////////////////////////////////

@@ -4,7 +4,9 @@ var Multiplayer = function() {
 
     var inEvents = {
         'register_playerId': onConnectPlayerId,
-        'register_success': onConnectSuccess
+        'register_success': onConnectSuccess,
+        'game_joinsuccess': onGameJoinSuccess,
+        'game_playerjoined': onGamePlayerJoined,
     };
 
     var playerId = null;
@@ -78,6 +80,14 @@ var Multiplayer = function() {
         }
     }
 
+    function onGameJoinSuccess(msg) {
+        // create player objects and add to pool
+    }
+
+    function onGamePlayerJoined(msg) {
+        // add new player to pool
+    }
+
     /////////////////////////////////////////////
 
     function respondConnectPlayerName() {
@@ -85,6 +95,13 @@ var Multiplayer = function() {
         var msg = newSocketMessage('register_playername', {
             playerName: "GreatestPlayerInTheWorld"
         });
+
+        socket.send(msg);
+    }
+
+    function joinGame() {
+
+        var msg = newSocketMessage('game_join', {});
 
         socket.send(msg);
     }
