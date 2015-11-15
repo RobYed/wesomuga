@@ -1,34 +1,41 @@
 'use strict';
 
-var Player = require('./player');
+var crypto = require('crypto'),
+    Player = require('./player');
 
 
 class PlayerPool {
 
     constructor() {
-        this.players = {};
+        this._players = {};
+    }
+
+    sendToAll(event, payload) {
+        for (var playerId in this._players) {
+            this._players[playerId].send(event, payload);
+        }
     }
 
     createPlayer(socket) {
         var player = new Player(socket);
 
         // add player to player pool
-        this.players[player.getId()] = player;
+        this._players[player.getId()] = player;
 
         return player;
     }
 
     getPlayerById(playerId) {
-        if (!this.players.hasOwnProperty(playerId)) {
+        if (!this._players.hasOwnProperty(playerId)) {
           return null;
         }
-        return this.players[playerId];
+        return this._players[playerId];
     }
 
     getPlayerBySocket(socket) {
-        for (var playerId in this.players) {
-            if (this.players[playerId].socket === socket) {
-                return this.players[playerId];
+        for (var playerId in this._players) {
+            if (this._players[playerId].socket === socket) {
+                return this._players[playerId];
             }
         }
       return null;
@@ -37,18 +44,18 @@ class PlayerPool {
     getAllPlayerSockets() {
         var playerSockets = [];
 
-        for (var playerId in this.players) {
-            playerSockets.push(this.players[playerId]);
+        for (var playerId in this._players) {
+            playerSockets.push(this._players[playerId]);
         }
 
         return playerSockets;
     }
 
     setPlayerName(playerId, name) {
-        if (!this.players.hasOwnProperty(playerId)) {
+        if (!this._players.hasOwnProperty(playerId)) {
             return false;
         }
-        this.players[playerId].setName(name);
+        this._players[playerId].setName(name);
         return true;
     }
 
@@ -59,7 +66,7 @@ class PlayerPool {
             return;
         }
 
-        delete this.players[player.getId()];
+        delete this._players[player.getId()];
     }
 }
 

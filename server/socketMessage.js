@@ -3,14 +3,17 @@
 class SocketMessage {
 
   constructor(event, payload) {
-    this.header = { event: event };
-    this.payload = payload;
+    this._header = {
+      event: event,
+      dateSent: new Date()
+    };
+    this._payload = payload;
   }
 
   toJSON() {
     var msg = {
-        header: this.header,
-        payload: this.payload
+        header: this._header,
+        payload: this._payload
     };
     return JSON.stringify(msg);
   }

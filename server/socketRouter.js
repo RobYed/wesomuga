@@ -1,7 +1,6 @@
 'use strict';
 
-var gameManager    = require('./gameManager')(),
-    SocketMessage  = require('./socketMessage');
+var gameManager    = require('./gameManager')();
 
 
 class SocketRouter {
@@ -47,12 +46,9 @@ class SocketRouter {
         // create new player
         var player = this.playerPool.createPlayer(socket);
 
-        // return playerId to player
-        var msg = new SocketMessage("register_playerId", {
+        player.send('register_playerId', {
           playerId: player.getId(),
         });
-
-        socket.send(msg.toJSON());
     }
 
     onConnectPlayerName(msgObj) {
@@ -62,9 +58,11 @@ class SocketRouter {
 
         player.setName(msgObj.payload.playerName);
 
-        console.log("new player registered: ", player.name);
+        console.log("new player registered: ", player.getName());
 
-        this.respondConnectSuccess(player.getSocket());
+        player.send('register_success', {
+          success: true,
+        });
     }
 
     onGameJoin(msgObj) {
@@ -78,28 +76,12 @@ class SocketRouter {
         // request active players from game pool
         // var playerList = gameManager.getCurrentPlayers();
 
-        this.respondGameJoinSuccess(player.getSocket(), playerList);
-    }
-
-    /////////////////////////////////////////////
-
-    respondConnectSuccess(socket) {
-        var msg = new SocketMessage("register_success", {
-          success: true,
-        });
-
-        socket.send(msg.toJSON());
-    }
-
-    respondGameJoinSuccess(socket, playerList) {
-        var msg = new SocketMessage("game_joinsuccess", {
+        player.send('game_joinsuccess', {
           success: true,
           players: playerList,
         });
-
-        socket.send(msg.toJSON());
-
     }
+
 }
 
 module.exports = function(playerSocket) {
