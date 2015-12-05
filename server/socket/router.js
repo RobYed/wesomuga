@@ -1,6 +1,6 @@
 'use strict';
 
-var gameManager    = require('./gameManager')();
+var gameManager    = require('../game/manager')();
 
 
 class SocketRouter {

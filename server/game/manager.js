@@ -24,12 +24,16 @@ class GameManager {
         return newGameId;
     }
 
-    addPlayerToGame(playerObj) {
+    addPlayerToGame(playerId) {
+        var game = this._games[this.defaultGameId];
 
+        return game.addPlayer(playerId);
     }
 
-    removePlayerFromGame(playerObj) {
+    removePlayerFromGame(playerId) {
+        var game = this._games[this.defaultGameId];
 
+        return game.removePlayer(playerId);
     }
 
     updateGame(gameId, updateParams) {

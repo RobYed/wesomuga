@@ -41,6 +41,7 @@ class Game {
 
         // TODO: remove player from _players
         // TODO: remove player status from _status
+        return true;
     }
 
     getGameStatus() {

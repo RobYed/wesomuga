@@ -1,7 +1,7 @@
 'use strict';
 
 var crypto          = require('crypto'),
-    SocketMessage   = require('./socketMessage');
+    SocketMessage   = require('../socket/message');
 
 
 class Player {
