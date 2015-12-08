@@ -11,8 +11,10 @@ class Game {
     constructor() {
         this._id = crypto.randomBytes(16).toString('hex');
         this._players = [];
-        this._status = []; // uses same index as players
         this._createDate = new Date();
+
+        this._unprocessedPlayerStates = [];
+        this._processedPlayerStates = [];
 
         console.log("new game created: ", this._id);
     }
@@ -28,7 +30,7 @@ class Game {
         }
 
         this._players.push(playerId);
-        this._status.push({}); // TODO: check if more initial data required
+        // this._status.addNewPlayerState(playerId, {}); // TODO: check if more initial data required
         return false;
     }
 
@@ -44,22 +46,7 @@ class Game {
         return true;
     }
 
-    getGameStatus() {
-        return this._status;
-    }
-
-    updateGameStatus(gameStatus) {
-
-        if (gameStatus.length !== this._players.length) {
-            return false;
-        }
-
-        // TODO: more validity checks
-        this._status = gameStatus;
-        return true;
-    }
-
-    updatePlayerStatus(playerId, playerStatus) {
+    addPlayerUpdate(playerId, playerUpdate) {
 
         var playerIndex = this._players.indexOf(playerId);
 
@@ -69,7 +56,7 @@ class Game {
         }
 
         // TODO: more validity checks
-        this._status[playerIndex] = playerStatus;
+        this._status[playerIndex] = playerUpdate;
         return true;
     }
 }

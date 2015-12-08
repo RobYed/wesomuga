@@ -66,7 +66,7 @@ class PlayerPool {
             return;
         }
 
-        delete this._players[player.getId()];
+        delete this._players[player.getId()]; // TODO: return boolean success
     }
 }
 

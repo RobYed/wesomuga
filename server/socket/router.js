@@ -5,6 +5,8 @@ var gameManager    = require('../game/manager')();
 
 class SocketRouter {
 
+    // TODO: add _ as private indicator
+
     constructor(playerPool) {
         this.inEvents = {
             'register_newplayer': this.onConnectNewPlayer.bind(this),
