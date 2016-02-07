@@ -52,16 +52,6 @@ var game = {
         me.loader.preload(game.resources);
 
         /*
-        // SOCKET
-        game.socket.on('connect', function(){
-            console.log('connected to websocket server');
-        });
-
-        game.socket.on('register_player', function(playerId) {
-            game.data.playerId = playerId;
-            console.log('registered with id ', playerId);
-        });
-
         game.socket.on('new_player', function(playerSettings) {
             console.log(playerSettings.nickname+' joined the game', playerSettings.pos.x, playerSettings.pos.y);
 

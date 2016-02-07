@@ -13,6 +13,7 @@ class SocketRouter {
         this._inEvents[EVENTS.IN.REGISTER_NEW_PLAYER] = this.onConnectNewPlayer.bind(this);
         this._inEvents[EVENTS.IN.REGISTER_PLAYERNAME] = this.onConnectPlayerName.bind(this);
         this._inEvents[EVENTS.IN.PLAYER_GAME_JOIN] = this.onGameJoin.bind(this);
+        this._inEvents[EVENTS.IN.PLAYER_STATE_UPDATE] = this.onStateUpdate.bind(this);
 
         this._playerPool = playerPool;
     }
@@ -92,6 +93,20 @@ class SocketRouter {
             });
         }
         
+    }
+    
+    onStateUpdate(msgObj) {
+                
+        var player = this._playerPool.getPlayerById(msgObj.header.playerId);
+        
+        var stateUpdate = [{
+                timestamp: msgObj.payload.timestamp,
+                state: msgObj.payload.state
+            }];
+        
+        player.send(EVENTS.OUT.SERVER_STATE_UPDATE, {
+            stateUpdate: stateUpdate
+        });
     }
 
 }

@@ -68,16 +68,18 @@ game.PlayerEntity = me.Entity.extend({
 
     ------            */
     update : function (dt) {
+        
+        var state = game.multiplayer.serverState.getLatest();
 
-        if (me.input.isKeyPressed("left"))    {
+        if (state.left)    {
             this.body.vel.x -= this.body.accel.x * me.timer.tick;
             this.renderable.flipX(true);
-        } else if (me.input.isKeyPressed("right")) {
+        } else if (state.right) {
             this.body.vel.x += this.body.accel.x * me.timer.tick;
             this.renderable.flipX(false);
         }
 
-        if (me.input.isKeyPressed("jump")) {
+        if (state.jump) {
             this.body.jumping = true;
 
             if (this.multipleJump <= 2) {
