@@ -69,7 +69,7 @@ game.PlayerEntity = me.Entity.extend({
     ------            */
     update : function (dt) {
         
-        var state = game.multiplayer.serverState.getLatest();
+        var state = game.state.getLatest();
 
         if (state.left)    {
             this.body.vel.x -= this.body.accel.x * me.timer.tick;

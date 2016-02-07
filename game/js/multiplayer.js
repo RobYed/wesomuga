@@ -1,8 +1,6 @@
 var Multiplayer = function(config) {
 
     var socket = new WebSocket('ws://192.168.1.229:4080');
-    
-    var UPDATE_INTERVAL = 300;
 
     var inEvents = {
         'register_playerId': onConnectPlayerId.bind(this),
@@ -14,27 +12,6 @@ var Multiplayer = function(config) {
     };
 
     var playerId, gamesList, gameId = null;
-    
-    var playerState = new Object();
-    
-    this.serverState = new Object();
-    
-    this.serverState.getLatest = function() {
-        // return value of latest timestamp
-        var latest = 0;
-        for (var t in this) {
-            var timestamp = parseInt(t);
-            if (timestamp > latest) {
-                latest = timestamp;
-            }
-        }
-        return this[latest];
-    }
-    
-    var self = this;
-    setTimeout(function() {
-        console.log(self.serverState.getLatest());
-    }, 1200);
     
     var onJoin = function() {};
     
@@ -126,7 +103,7 @@ var Multiplayer = function(config) {
         onJoin();
         
         // start key listener // TODO: move to game start
-        registerKeyListener();
+        game.state.registerKeyListener();
     }
     
     function onGameJoinFailure(msg) {
@@ -139,13 +116,7 @@ var Multiplayer = function(config) {
     
     function onServerStateUpdate(msg) {
 
-        var serverStateUpdate = msg.payload.stateUpdate;
-        
-        for (var stateIndex in serverStateUpdate) {
-            var state = serverStateUpdate[stateIndex];
-            // save server state
-            this.serverState[state.timestamp] = state.state;
-        }
+        game.state.push(msg.payload.stateUpdate);
     }
 
     /////////////////////////////////////////////
@@ -168,7 +139,7 @@ var Multiplayer = function(config) {
         socket.send(msg);
     }
     
-    function sendPlayerUpdate(playerUpdate) {
+    this.sendPlayerUpdate = function(playerUpdate) {
         
         var msg = newSocketMessage('player_state_update', {
             timestamp: Date.now(),
@@ -176,24 +147,5 @@ var Multiplayer = function(config) {
         });
 
         socket.send(msg);
-    }
-    
-    /////////////////////////////////////////////
-    
-    function registerKeyListener() {
-        var self = this;
-        
-        setInterval(function() {
-            var keys = ["left", "right", "jump", "down"];
-            var keysPressed = new Object();
-        
-            // for every key, check if it was pressed
-            for (var i=0; i < keys.length; i++) {
-                keysPressed[keys[i]] = me.input.isKeyPressed(keys[i]);
-            }
-            // send player status update to the server
-            sendPlayerUpdate(keysPressed);
-            
-        }, UPDATE_INTERVAL);
     }
 };

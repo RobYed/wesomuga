@@ -99,10 +99,8 @@ class SocketRouter {
                 
         var player = this._playerPool.getPlayerById(msgObj.header.playerId);
         
-        var stateUpdate = [{
-                timestamp: msgObj.payload.timestamp,
-                state: msgObj.payload.state
-            }];
+        var stateUpdate = new Object();
+        stateUpdate[msgObj.payload.timestamp] = msgObj.payload.state;
         
         player.send(EVENTS.OUT.SERVER_STATE_UPDATE, {
             stateUpdate: stateUpdate

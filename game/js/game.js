@@ -19,6 +19,8 @@ var game = {
             me.state.change(me.state.LOADING);
         }
     }),
+    
+    state: new GameState(),
 
     /**
      *
