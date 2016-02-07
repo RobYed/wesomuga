@@ -25,19 +25,19 @@ class Game {
 
     addPlayer(playerId) {
 
-        if (this._player.length >= GAME_MAX_PLAYER_COUNT) {
+        if (this._players.length >= GAME_MAX_PLAYER_COUNT) {
             return false;
         }
 
         this._players.push(playerId);
         // this._status.addNewPlayerState(playerId, {}); // TODO: check if more initial data required
-        return false;
+        return true;
     }
 
     removePlayer(playerId) {
 
         // check if player exists
-        if (this._players.indexOf(playerId) == -1) {
+        if (this._players.includes(playerId)) { // this._players.indexOf(playerId) == -1
             return false;
         }
 

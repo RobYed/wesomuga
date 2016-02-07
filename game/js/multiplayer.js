@@ -1,15 +1,24 @@
-var Multiplayer = function() {
+var Multiplayer = function(config) {
 
     var socket = new WebSocket('ws://192.168.1.229:4080');
 
     var inEvents = {
         'register_playerId': onConnectPlayerId,
         'register_success': onConnectSuccess,
-        'game_joinsuccess': onGameJoinSuccess,
+        'game_join_success': onGameJoinSuccess,
+        'game_join_failure': onGameJoinFailure,
         'game_playerjoined': onGamePlayerJoined,
     };
 
-    var playerId = null;
+    var playerId, gamesList, gameId = null;
+    
+    var onJoin = function() {};
+    
+    
+    
+    if (config) {
+        onJoin = config.loadGameCallback;
+    }
 
     // Listen for incoming messages
     socket.onmessage = handleIncoming;
@@ -77,11 +86,26 @@ var Multiplayer = function() {
     function onConnectSuccess(msg) {
         if (msg.payload.success) {
             console.log("registration successful");
+            
+            // save games list
+            gamesList = msg.payload.games;
+            console.log("games available: ", gamesList);
+            
+            // join first game from list // TODO: let user choose
+            joinGame(gamesList[0]);
         }
     }
 
     function onGameJoinSuccess(msg) {
         // create player objects and add to pool
+        console.log("joined game", msg.payload.gameId);
+        
+        // load game now
+        onJoin();
+    }
+    
+    function onGameJoinFailure(msg) {
+        console.log("could not join game");
     }
 
     function onGamePlayerJoined(msg) {
@@ -99,9 +123,11 @@ var Multiplayer = function() {
         socket.send(msg);
     }
 
-    function joinGame() {
+    function joinGame(gameId) {
 
-        var msg = newSocketMessage('game_join', {});
+        var msg = newSocketMessage('player_join_game', {
+            gameId: gameId
+        });
 
         socket.send(msg);
     }

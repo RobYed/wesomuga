@@ -13,7 +13,12 @@ var game = {
         otherPlayers: {},
     },
 
-    multiplayer: new Multiplayer(),
+    multiplayer: new Multiplayer({
+        loadGameCallback: function() {
+            // load everything & display a loading screen
+            me.state.change(me.state.LOADING);
+        }
+    }),
 
     /**
      *
@@ -45,9 +50,6 @@ var game = {
 
         // set all ressources to be loaded
         me.loader.preload(game.resources);
-
-        // load everything & display a loading screen
-        me.state.change(me.state.LOADING);
 
         /*
         // SOCKET

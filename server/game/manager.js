@@ -24,16 +24,28 @@ class GameManager {
         return newGameId;
     }
 
-    addPlayerToGame(playerId) {
-        var game = this._games.get(this.defaultGameId);
-
+    addPlayerToGame(playerId, gameId) {
+        var game = this._games.get(gameId);
+        
+        // check if game with given id was found
+        if (!game) {
+            return false;
+        }
         return game.addPlayer(playerId);
     }
 
-    removePlayerFromGame(playerId) {
-        var game = this._games.get(this.defaultGameId);
-
+    removePlayerFromGame(playerId, gameId) {
+        var game = this._games.get(gameId);
+        
+        // check if game with given id was found
+        if (!game) {
+            return false;
+        }
         return game.removePlayer(playerId);
+    }
+    
+    getGamesList() {
+        return Array.from(this._games.keys());
     }
 
     updateGame(gameId, updateParams) {

@@ -8,6 +8,21 @@
   - https://github.com/websockets/ws
   - https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications
 
+## Phases
+
+### AUTH
+
+* CONNECTION: start of websocket connection for client/server communication
+* OUT.USER_LOGIN: user logs in with username and password (TODO)
+* OUT.USER_REGISTER: new user registers with username and password (TODO)
+
+### LOBBY
+tba
+
+### GAME
+tba
+
+
 ## Sources
 
 ### Multiplayer Server In General

@@ -9,12 +9,12 @@ class SocketRouter {
     // TODO: add _ as private indicator
 
     constructor(playerPool) {
-        this.inEvents = new Object();
-        this.inEvents[EVENTS.IN.REGISTER_NEW_PLAYER] = this.onConnectNewPlayer.bind(this);
-        this.inEvents[EVENTS.IN.REGISTER_PLAYERNAME] = this.onConnectPlayerName.bind(this);
-        this.inEvents[EVENTS.IN.PLAYER_GAME_JOIN] = this.onGameJoin.bind(this);
+        this._inEvents = new Object();
+        this._inEvents[EVENTS.IN.REGISTER_NEW_PLAYER] = this.onConnectNewPlayer.bind(this);
+        this._inEvents[EVENTS.IN.REGISTER_PLAYERNAME] = this.onConnectPlayerName.bind(this);
+        this._inEvents[EVENTS.IN.PLAYER_GAME_JOIN] = this.onGameJoin.bind(this);
 
-        this.playerPool = playerPool;
+        this._playerPool = playerPool;
     }
 
     handleIncoming(message) {
@@ -34,8 +34,8 @@ class SocketRouter {
         }
 
         // call event handler
-        if (this.inEvents.hasOwnProperty(msgObj.header.event)) {
-            this.inEvents[msgObj.header.event](msgObj);
+        if (this._inEvents.hasOwnProperty(msgObj.header.event)) {
+            this._inEvents[msgObj.header.event](msgObj);
             return true;
         }
 
@@ -46,7 +46,7 @@ class SocketRouter {
 
     onConnectNewPlayer(socket) {
         // create new player
-        var player = this.playerPool.createPlayer(socket);
+        var player = this._playerPool.createPlayer(socket);
 
         player.send(EVENTS.OUT.REGISTER_PLAYER_ID, {
           playerId: player.getId(),
@@ -56,7 +56,7 @@ class SocketRouter {
     onConnectPlayerName(msgObj) {
         var playerId = msgObj.header.playerId;
 
-        var player = this.playerPool.getPlayerById(playerId);
+        var player = this._playerPool.getPlayerById(playerId);
 
         player.setName(msgObj.payload.playerName);
 
@@ -64,24 +64,34 @@ class SocketRouter {
 
         player.send(EVENTS.OUT.PLAYER_REGISTER_SUCCESS, {
           success: true,
+          games: gameManager.getGamesList()
         });
     }
 
     onGameJoin(msgObj) {
         console.log(msgObj.header.playerId + "joined game");
 
-        var player = playerPool.getPlayerById(msgObj.header.playerId);
+        var player = this._playerPool.getPlayerById(msgObj.header.playerId);
 
         // pass player object to game pool
-        // gameManager.addPlayerToGame(player);
+        var joinSuccess = gameManager.addPlayerToGame(player, msgObj.payload.gameId);
 
         // request active players from game pool
         // var playerList = gameManager.getCurrentPlayers();
+        
+        console.log(joinSuccess ? player.getName()+" joined game "+msgObj.payload.gameId : "join failed!");
 
-        player.send(EVENTS.OUT.GAME_JOIN_SUCCESS, {
-          success: true,
-          players: playerList,
-        });
+        if (joinSuccess) {
+            player.send(EVENTS.OUT.GAME_JOIN_SUCCESS, {
+                gameId: msgObj.payload.gameId
+                // players: playerList,
+            });
+        } else {
+            player.send(EVENTS.OUT.GAME_JOIN_FAILURE, {
+                // players: playerList,
+            });
+        }
+        
     }
 
 }
