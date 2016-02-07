@@ -1,8 +1,11 @@
 game.OtherPlayerEntity = me.Entity.extend({
-    init: function(x, y) {
+    init: function(offsetX, offsetY, playerId) {
+        
+        var x = offsetX;
+        var y = 200 + offsetY;
 
         var settings = {
-            name:"otherPlayer",
+            name: playerId,
             z:6,
             width:35,
             height:88
@@ -10,6 +13,8 @@ game.OtherPlayerEntity = me.Entity.extend({
 
         // call the constructor
         this._super(me.Entity, "init", [x, y , settings]);
+        
+        this.playerId = playerId;
 
         // player can exit the viewport (jumping, falling into a hole, etc.)
         this.alwaysUpdate = true;
@@ -140,9 +145,6 @@ game.OtherPlayerEntity = me.Entity.extend({
         if (!this.renderable.flickering)
         {
             this.renderable.flicker(750);
-            // flash the screen
-            me.game.viewport.fadeIn("#FFFFFF", 75);
-            me.audio.play("die", false);
         }
     }
 });

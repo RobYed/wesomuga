@@ -10,6 +10,7 @@ class Player {
         this._id = crypto.randomBytes(16).toString('hex');
         this._name = "player_" + this._id;
         this._socket = socket;
+        this._currentGame = null;
 
         console.log(this._name, "added");
     }
@@ -38,6 +39,10 @@ class Player {
         }
         this._name = name;
         return true;
+    }
+    
+    setCurrentGame(gameId) {
+        this._currentGame = gameId;
     }
 
     toString() {

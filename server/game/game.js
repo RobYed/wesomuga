@@ -22,6 +22,10 @@ class Game {
     getId() {
         return this._id;
     }
+    
+    getPlayers() {        
+        return this._players;
+    }
 
     addPlayer(playerId) {
 
@@ -30,18 +34,21 @@ class Game {
         }
 
         this._players.push(playerId);
-        // this._status.addNewPlayerState(playerId, {}); // TODO: check if more initial data required
         return true;
     }
 
     removePlayer(playerId) {
+        
+        var playerIndex = this._players.indexOf(playerId);
 
         // check if player exists
-        if (this._players.includes(playerId)) { // this._players.indexOf(playerId) == -1
+        if (playerIndex == -1) {
             return false;
         }
-
-        // TODO: remove player from _players
+        
+        // remove player from _players
+        this._players.splice(playerIndex, 1);
+       
         // TODO: remove player status from _status
         return true;
     }

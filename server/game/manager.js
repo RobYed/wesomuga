@@ -23,14 +23,27 @@ class GameManager {
 
         return newGameId;
     }
+    
+    getGame(gameId) {
+        return this._games.get(gameId);
+    }
 
-    addPlayerToGame(playerId, gameId) {
+    addPlayerToGame(player, gameId) {
         var game = this._games.get(gameId);
         
         // check if game with given id was found
         if (!game) {
             return false;
         }
+        
+        // get sure, player will be removed when connection is lost
+        var self = this;
+        var playerSocket = player.getSocket();
+        var playerId = player.getId();
+        playerSocket.on('close', function() {
+            self.removePlayerFromGame(playerId, gameId);
+        });
+        
         return game.addPlayer(playerId);
     }
 

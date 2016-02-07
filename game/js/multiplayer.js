@@ -11,7 +11,7 @@ var Multiplayer = function(config) {
         'server_state_update': onServerStateUpdate.bind(this),
     };
 
-    var playerId, gamesList, gameId = null;
+    var playerId, gameId, gamesList = null;
     
     var onJoin = function() {};
     
@@ -77,6 +77,8 @@ var Multiplayer = function(config) {
     function onConnectPlayerId(msg) {
         playerId = msg.payload.playerId;
         console.log("registered with id ", playerId);
+        
+        game.data.playerId = playerId;
 
         respondConnectPlayerName();
     }
@@ -97,7 +99,9 @@ var Multiplayer = function(config) {
 
     function onGameJoinSuccess(msg) {
         // create player objects and add to pool
-        console.log("joined game", msg.payload.gameId);
+        console.log("joined game", msg.payload.gameId, msg.payload.players);
+        
+        game.data.otherPlayers = msg.payload.players;
         
         // load game now
         onJoin();

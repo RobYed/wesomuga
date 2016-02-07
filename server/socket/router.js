@@ -77,20 +77,19 @@ class SocketRouter {
         // pass player object to game pool
         var joinSuccess = gameManager.addPlayerToGame(player, msgObj.payload.gameId);
 
-        // request active players from game pool
-        // var playerList = gameManager.getCurrentPlayers();
+        // request active players from game
+        var game = gameManager.getGame(msgObj.payload.gameId);
+        var playerList = game.getPlayers();
         
         console.log(joinSuccess ? player.getName()+" joined game "+msgObj.payload.gameId : "join failed!");
 
         if (joinSuccess) {
             player.send(EVENTS.OUT.GAME_JOIN_SUCCESS, {
-                gameId: msgObj.payload.gameId
-                // players: playerList,
+                gameId: msgObj.payload.gameId,
+                players: playerList
             });
         } else {
-            player.send(EVENTS.OUT.GAME_JOIN_FAILURE, {
-                // players: playerList,
-            });
+            player.send(EVENTS.OUT.GAME_JOIN_FAILURE, {});
         }
         
     }
@@ -100,7 +99,8 @@ class SocketRouter {
         var player = this._playerPool.getPlayerById(msgObj.header.playerId);
         
         var stateUpdate = new Object();
-        stateUpdate[msgObj.payload.timestamp] = msgObj.payload.state;
+        stateUpdate[msgObj.payload.timestamp] = new Object();
+        stateUpdate[msgObj.payload.timestamp][player.getId()] = msgObj.payload.state;
         
         player.send(EVENTS.OUT.SERVER_STATE_UPDATE, {
             stateUpdate: stateUpdate

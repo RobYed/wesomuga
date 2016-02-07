@@ -10,7 +10,7 @@ var game = {
         // score
         score : 0,
         playerId: null,
-        otherPlayers: {},
+        otherPlayers: null,
     },
 
     multiplayer: new Multiplayer({
@@ -21,6 +21,21 @@ var game = {
     }),
     
     state: new GameState(),
+    
+    createPlayerObjects: function() {
+        
+        var otherPlayers = game.data.otherPlayers;
+        
+        for (var i=0; i < otherPlayers.length; i++) {
+            var playerId = otherPlayers[i];
+            if (playerId !== game.data.playerId) {
+                // programmatically add new player
+                game.data.otherPlayers[playerId] = me.pool.pull("otherPlayer", 200, 200, playerId);
+                me.game.world.addChild(game.data.otherPlayers[playerId]);
+            }
+        }
+        
+    },
 
     /**
      *
@@ -52,37 +67,6 @@ var game = {
 
         // set all ressources to be loaded
         me.loader.preload(game.resources);
-
-        /*
-        game.socket.on('new_player', function(playerSettings) {
-            console.log(playerSettings.nickname+' joined the game', playerSettings.pos.x, playerSettings.pos.y);
-
-            if (playerSettings.playerId !== game.data.playerId) {
-                // programmatically add new player
-                game.data.otherPlayers[playerSettings.playerId] = me.pool.pull("otherPlayer", playerSettings.pos.x, playerSettings.pos.y);
-                me.game.world.addChild(game.data.otherPlayers[playerSettings.playerId]);
-            }
-        });
-
-        game.socket.on('game_update', function(playerSettings) {
-
-            if (playerSettings.playerId !== game.data.playerId) {
-                game.data.otherPlayers[playerSettings.playerId].pos.x = playerSettings.pos.x;
-                game.data.otherPlayers[playerSettings.playerId].pos.y = playerSettings.pos.y;
-
-                game.data.otherPlayers[playerSettings.playerId].body.vel.x = playerSettings.vel.x;
-                game.data.otherPlayers[playerSettings.playerId].body.vel.y = playerSettings.vel.y;
-
-                game.data.otherPlayers[playerSettings.playerId].body.update();
-            }
-
-        });
-
-        game.socket.on('disconnect', function(){
-            console.log('disconnected from websocket server');
-        });
-
-        */
     },
 
 
