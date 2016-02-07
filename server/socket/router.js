@@ -1,6 +1,7 @@
 'use strict';
 
 var gameManager    = require('../game/manager')();
+var EVENTS         = require('./events');
 
 
 class SocketRouter {
@@ -8,11 +9,10 @@ class SocketRouter {
     // TODO: add _ as private indicator
 
     constructor(playerPool) {
-        this.inEvents = {
-            'register_newplayer': this.onConnectNewPlayer.bind(this),
-            'register_playername': this.onConnectPlayerName.bind(this),
-            'game_join': this.onGameJoin.bind(this),
-        };
+        this.inEvents = new Object();
+        this.inEvents[EVENTS.IN.REGISTER_NEW_PLAYER] = this.onConnectNewPlayer.bind(this);
+        this.inEvents[EVENTS.IN.REGISTER_PLAYERNAME] = this.onConnectPlayerName.bind(this);
+        this.inEvents[EVENTS.IN.PLAYER_GAME_JOIN] = this.onGameJoin.bind(this);
 
         this.playerPool = playerPool;
     }
@@ -48,7 +48,7 @@ class SocketRouter {
         // create new player
         var player = this.playerPool.createPlayer(socket);
 
-        player.send('register_playerId', {
+        player.send(EVENTS.OUT.REGISTER_PLAYER_ID, {
           playerId: player.getId(),
         });
     }
@@ -62,7 +62,7 @@ class SocketRouter {
 
         console.log("new player registered: ", player.getName());
 
-        player.send('register_success', {
+        player.send(EVENTS.OUT.PLAYER_REGISTER_SUCCESS, {
           success: true,
         });
     }
@@ -78,7 +78,7 @@ class SocketRouter {
         // request active players from game pool
         // var playerList = gameManager.getCurrentPlayers();
 
-        player.send('game_joinsuccess', {
+        player.send(EVENTS.OUT.GAME_JOIN_SUCCESS, {
           success: true,
           players: playerList,
         });

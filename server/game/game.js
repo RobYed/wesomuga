@@ -10,11 +10,11 @@ class Game {
 
     constructor() {
         this._id = crypto.randomBytes(16).toString('hex');
-        this._players = [];
+        this._players = new Array();
         this._createDate = new Date();
 
-        this._unprocessedPlayerStates = [];
-        this._processedPlayerStates = [];
+        this._unprocessedPlayerStates = new Array();
+        this._processedPlayerStates = new Array();
 
         console.log("new game created: ", this._id);
     }
