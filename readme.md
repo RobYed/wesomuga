@@ -30,6 +30,7 @@ http://gafferongames.com/networking-for-game-programmers/what-every-programmer-n
 http://www.gabrielgambetta.com/fast_paced_multiplayer.html
 http://buildnewgames.com/real-time-multiplayer/
 https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
+http://fabiensanglard.net/quake3/network.php
 
 ### MelonJS Multiplayer Server
 https://github.com/jroblak/MelonJS-Node-Socket.IO-Boilerplate-Example
