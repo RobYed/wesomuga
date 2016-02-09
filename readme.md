@@ -32,6 +32,7 @@ http://buildnewgames.com/real-time-multiplayer/
 https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
 http://fabiensanglard.net/quake3/network.php
 https://docs.unrealengine.com/latest/INT/Gameplay/Networking/Overview/index.html
+https://udn.epicgames.com/Three/NetworkingOverview.html
 
 ### MelonJS Multiplayer Server
 https://github.com/jroblak/MelonJS-Node-Socket.IO-Boilerplate-Example
